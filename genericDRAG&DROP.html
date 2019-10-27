@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .container{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+        .dropper{
+            width: 350px;
+            height:300px;
+            background: #555555;
+            display: flex;
+        }
+        .element{
+            width: 60px;
+            height: 60px;
+            margin: 10px;
+        }
+        .over{
+            background: #555555;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="dropper">
+        <div class="element" style="background: blue;"></div>
+        <div class="element" style="background: #45ff3d;"></div>
+        <div class="element" style="background: #ff492e;"></div>
+        <div class="element" style="background: #fffd41;"></div>
+        <div class="element" style="background: #ff3beb;"></div>
+        <div class="element" style="background: #ffab0f;"></div>
+        <div class="element" style="background: #dbe0ff;"></div>
+        <div class="element" style="background: #86ddff;"></div>
+        <div class="element" style="background: #93ff13;"></div>
+        <div class="element" style="background: #1bffbe;"></div>
+    </div>
+    <div class="dropper"></div>
+    <div class="dropper"></div>
+</div>
+
+
+<script>
+    class Drag{
+        constructor(...droppers){
+            this.droppers=droppers;
+            this._elem=[];
+            if(droppers.length <2){
+                throw new Error('Add at least 2 droppers !')
+            }
+            for(let dropper of droppers){
+                for(let element of dropper.children){
+                    this._elem.push(element);
+                }
+            }
+        }
+        AllowDragDrop(){
+            let currentDrag='';
+            this._elem.forEach((element)=>{
+                element.draggable=true;
+                element.addEventListener('dragstart',(e)=>{
+                    e.dataTransfer.setData('text/plain','');
+                    currentDrag = e.currentTarget;
+                });
+            });
+
+            this.droppers.forEach((dropper)=>{
+                dropper.addEventListener('dragover',(e)=>{
+                    e.preventDefault();
+                    e.currentTarget.classList.add('over');
+                });
+                dropper.addEventListener('dragleave',(e)=>{
+                    e.currentTarget.classList.remove('over');
+                });
+                dropper.addEventListener('drop',(e)=>{
+                    let otherDropper = this.droppers.find((x)=>{ return x !==e.currentTarget});
+                    e.currentTarget.appendChild(currentDrag);
+                    e.currentTarget.classList.remove('over');
+                });
+            })
+        }
+
+    }
+    let dropper1 =document.querySelector(".dropper");
+    let dropper2 = document.querySelectorAll(".dropper")[1];
+    let dropper3 = document.querySelectorAll(".dropper")[2];
+    let element = document.querySelectorAll(".element");
+    let drag = new Drag(dropper1,dropper2,dropper3);
+    drag.AllowDragDrop()
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+    #AcceptFile{
+        display: inline-block;
+        width: 96px;
+    }
+</style>
+</head>
+<div class="container" id="testAPIFILE">
+    <h3 class="display-4">API FILE</h3>
+    <form action="" method="POST" enctype="multipart/form-data">
+        <input type="file" accept=".txt,.jpg,.png" id="AcceptFile">
+        <input type="submit" value="UPLOAD">
+    </form>
+    <span>Name: </span></span><span id="name"></span><br/>
+    <span>Last Modified : </span><span id="lastModified"></span><br/>
+    <span>Size : </span><span id="size"></span><br/>
+    <span>Type : </span><span id="type"></span>
+    <div id="ZoneReader"></div>
+
+</div>
+<body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+    let File = document.querySelector("#AcceptFile");
+    let spanName=document.querySelector("#name");
+    let spanLastModified=document.querySelector("#lastModified");
+    let spanSize=document.querySelector("#size");
+    let spanType=document.querySelector("#type");
+    let ZoneReader=document.querySelector("#ZoneReader");
+    let img = document.querySelector("img");
+
+    File.onchange = (e)=>{
+        let element = e.target;
+        let fichier = element.files[0];
+        let name = fichier.name;
+        spanName.textContent=name.split('.')[0];
+        let lastModified = fichier.lastModified;
+        let newDate = new Date(lastModified);
+        spanLastModified.textContent=newDate.toLocaleDateString()+' '+newDate.toLocaleTimeString();
+        let size = fichier.size; //bytes 1byte = 1 octet  1Mo = 1 048 576 octet
+        let Mo = (size / 1048576);
+        let MoVisible = Number(Mo).toPrecision(2);
+        spanSize.textContent=MoVisible+' Mo';
+        let type = fichier.type;
+        spanType.textContent=type;
+
+        let regex= /^image/i;
+        console.log(regex.test(type));
+        if (regex.test(type)===false){
+            let reader=new FileReader();
+            reader.onload = (e)=>{
+                ZoneReader.textContent = reader.result;
+            };
+            reader.readAsText(fichier);
+        }else{
+            let img=document.createElement('img');
+
+            ZoneReader.textContent="";
+            img.style.width='60px';
+            img.style.height='60px';
+            img.src = window.URL.createObjectURL(fichier);
+            spanName.append(img)
+        }
+    }
+</script>
+</body>
+</html>
