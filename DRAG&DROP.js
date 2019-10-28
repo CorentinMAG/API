@@ -13,11 +13,13 @@ export class Drag{
     }
     AllowDragDrop(){
         let currentDrag='';
+        let currentDropper='';
         this._elem.forEach((element)=>{
             element.draggable=true;
             element.addEventListener('dragstart',(e)=>{
                 e.dataTransfer.setData('text/plain','');
                 currentDrag = e.currentTarget;
+                currentDropper=e.currentTarget.parentElement;
             });
         });
 
@@ -30,10 +32,34 @@ export class Drag{
                 e.currentTarget.classList.remove('over');
             });
             dropper.addEventListener('drop',(e)=>{
-                let otherDropper = this.droppers.find((x)=>{ return x !==e.currentTarget});
-                e.currentTarget.appendChild(currentDrag);
-                e.currentTarget.classList.remove('over');
+                e.preventDefault();
+                if(e.dataTransfer.files.length >0){
+                    //mettre en place des contrôles pour type de fichier,size ....
+                    Upload(e.dataTransfer.files[0],e.currentTarget)
+                }else{
+                    if(e.currentTarget !== currentDropper){
+                        e.currentTarget.appendChild(currentDrag);
+                    }
+                    e.currentTarget.classList.remove('over');
+                }
             });
-        })
+        });
+        function Upload(file,area){
+            let img = document.createElement('div');
+            img.style.width='60px';
+            img.style.height='60px';
+            img.style.background = 'url('+window.URL.createObjectURL(file)+')';
+            img.style.backgroundSize='cover';
+            img.draggable=true;
+            area.appendChild(img);
+
+            img.addEventListener('dragstart',(e)=>{
+                e.dataTransfer.setData('text/plain','');
+                currentDrag = e.currentTarget;
+                currentDropper=e.currentTarget.parentElement;
+            });
+            area.classList.remove('over');
+            //fetch pour mettre le fichier sur le serveur
+        }
     }
 }
