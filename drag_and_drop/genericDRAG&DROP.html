@@ -16,6 +16,17 @@
             background: #555555;
             display: flex;
         }
+        .Dropper{
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+        .img_drop{
+            display: block;
+            width: 60px;
+            height: 60px;
+            margin:10px;
+        }
         .element{
             width: 60px;
             height: 60px;
@@ -55,7 +66,7 @@
     let dropper2 = document.querySelectorAll(".dropper")[1];
     let dropper3 = document.querySelectorAll(".dropper")[2];
     let drag = new Drag(dropper1,dropper2,dropper3);
-    drag.AllowDragDrop()
+    drag.AllowDragDrop();
 
 
 

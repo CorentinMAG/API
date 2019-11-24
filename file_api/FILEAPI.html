@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<style>
+    form{
+        width: 300px;
+    }
+    #AcceptFile{
+        display: block;
+        width: 100%;
+        color:#fff;
+    }
+    #ZoneReader{
+        position: relative;
+        width: 30%;
+        height:300px;
+        margin:auto;
+        overflow: auto;
+    }
+    .AddImg{
+        object-fit: cover;
+        object-position: center;
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform: translate(-50%,-50%);
+        height: auto;
+        width: auto;
+        max-width: 600px;
+        max-height: 600px;
+    }
+</style>
+</head>
+
+<body>
+<div class="container" id="testAPIFILE">
+    <h3 class="display-4">API FILE</h3>
+    <form action="" enctype="multipart/form-data">
+        <input type="file"  id="AcceptFile">
+    </form>
+    <span>Name: </span><span id="name"></span><br/>
+    <span>Last Modified : </span><span id="lastModified"></span><br/>
+    <span>Size : </span><span id="size"></span><br/>
+    <span>Type : </span><span id="type"></span>
+    <pre id="ZoneReader"></pre>
+
+</div>
+<script type="module" >
+    import {example} from './FILEAPI.js';
+    example()
+
+</script>
+</body>
+</html>

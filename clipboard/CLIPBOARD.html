@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            outline: none;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial';
+        }
+        button{
+            display: inline-block;
+            background:#f1c40f;
+            border:none;
+            padding:5px;
+            border-radius: 5px;
+            position:relative;
+        }
+        p{
+            display: inline-block;
+        }
+        textarea{
+            display: block;
+        }
+        #before{
+            display: inline-block;
+            position:relative;
+            background: rgba(0,0,0,0.6);
+            color:#fff;
+        }
+        #before:before{
+            content: '';
+            position: absolute;
+            bottom:0;
+            transform: translateY(0.5rem);
+            left: 50%;
+            display: block;
+            width: 0;
+            height: 0;
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+            border-top: 8px solid rgba(0,0,0,0.6);
+        }
+        span{
+            border-radius: 10px;
+            padding:5px;
+        }
+        #wrapper{
+            width: 200px;
+            position:absolute;
+            top:-40px;
+            left: -50px;
+            visibility: hidden;
+        }
+        #after{
+            display: inline-block;
+            position:relative;
+            background: rgba(0,0,0,0.6);
+            color:#fff;
+        }
+        #after:before{
+            content: '';
+            position: absolute;
+            bottom:0;
+            transform: translateY(0.5rem);
+            left: 50%;
+            display: block;
+            width: 0;
+            height: 0;
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+            border-top: 8px solid rgba(0,0,0,0.6);
+        }
+        #wrapper2{
+            width: 70px;
+            position:absolute;
+            top:-40px;
+            left:-20px;
+            visibility: hidden;
+        }
+        #global{
+            display: inline-block;
+            position: relative;
+        }
+
+    </style>
+</head>
+<body>
+<form action="" >
+    <textarea name="" id="" cols="30" rows="10"></textarea>
+    <textarea name="" id="" cols="30" rows="10"></textarea>
+</form>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+<div id="global">
+    <div id="wrapper">
+        <span id="before">Copy to clipboard</span>
+    </div>
+    <div id="wrapper2">
+        <span id="after">Copied!</span>
+    </div>
+    <button>COPY</button>
+</div>
+<div id="explanation">
+    if you click copy and you paste into the first textarea the paragraphe will be copied.<br/>
+    But if you try to paste it into the second textarea only the word 'data past' will appear.<br/>
+    If you copy the paragraphe without click on copy then the paragraphe in capital letter will appear if you copy into the first textarea<br/>
+    If you cut the paragraphe, then only 'data cut' will appear into the first textarea and 'data pasted' into the second one.<br/>
+    If you paste into the second textarea but the clipboard is empty then the sentence 'data pasted' will appear
+</div>
+
+
+
+
+<script type="module">
+    import {example} from './CLIPBOARD.js';
+    example();
+</script>
+
+</body>
+</html>

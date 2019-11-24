@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="text">
+<span></span>
+<div>Once you've finished to write, close and reopen the navigator. The input should be persistant</div>
+<div>IndexedDB</div>
+
+<script>
+    let input = document.querySelector("input");
+    let span = document.querySelector("span");
+    let divDB=document.querySelector('div');
+    input.addEventListener('input',()=>{
+        span.textContent=input.value;
+        window.localStorage.setItem('data',input.value);
+
+    });
+    span.textContent = window.localStorage.getItem('data');
+    let db;
+    let req=window.indexedDB.open('MyTestDatabase');
+    req.onerror=(e)=>{
+        divDB.textContent='Accès refusé à indexedDB'
+    };
+    req.onsuccess=(e)=>{
+        db=e.target.result;
+        db.onerror=(e)=>{
+            divDB.textContent+='Database error : '+e.target.errorCode;
+        }
+    };
+    req.onupgradeneeded=(e)=>{
+        var db=e.target.result;
+        var object=db.createObjectStore('name',{keyPath:'myKey'});
+    }
+</script>
+
+</body>
+</html>
