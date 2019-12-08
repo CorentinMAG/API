@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CRYPTO</title>
+</head>
+<body>
+<div>
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam enim incidunt quia repellendus ullam! Dolorem dolores illum nisi! Accusantium consequuntur cupiditate eos expedita ipsum iusto nemo quis quisquam rem suscipit.
+</div>
+<div id="r"></div>
+<button id="encrypt">Encrypter</button>
+<button id="decrypt">Décrypter</button>
+<input type="text" style="display: block">
+<div id="verify"></div>
+<button id="sign">Sign</button>
+<button id="verifybutton">Verify</button>
+<p id="digest"> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto itaque modi nisi non numquam quas soluta suscipit. Ab optio, ullam! Ad culpa dolor exercitationem fuga optio quia soluta temporibus voluptatibus?</p>
+<p>Digest Result :</p>
+<p id="digestresult"></p>
+<script type="module">
+    import {Digest} from './digest.js';
+    import {GenerateEncryptDecryptKey} from './edkey.js'
+    import {GenerateSignVerifyKey} from './svkey.js'
+
+    //variables
+    let txtToDigest=document.querySelector("#digest").textContent;
+    let digestresult=document.querySelector("#digestresult");
+    let buttonEnc=document.querySelector("#encrypt");
+    let buttondec=document.querySelector("#decrypt");
+    let txtenc_dec=document.querySelector("div").textContent;
+    let resultenc_dec=document.querySelector("#r");
+    let buttonsign=document.querySelector("#sign");
+    let buttonverify=document.querySelector("#verifybutton");
+    let input =document.querySelector("input");
+    let zoneverify=document.querySelector("#verify");
+
+    //digest
+    let digest = new Digest("SHA-256",txtToDigest);
+    digest.DigestDataInHexa().then(result=>digestresult.textContent=result);
+
+    //encrypt and decrypt
+    let edKey = new GenerateEncryptDecryptKey("RSA-OAEP");
+    edKey.Generate().then((keyPair)=>{
+        let cyphertext;
+        buttonEnc.addEventListener("click",()=>{
+            edKey.Encrypt("RSA-OAEP",keyPair.publicKey,txtenc_dec).then((result)=>{
+                const buffer = new Uint8Array(result,0,5);
+                cyphertext=result;
+                resultenc_dec.textContent=`${buffer}...[${result.byteLength} bytes total]`;
+            })
+        });
+        buttondec.addEventListener("click",()=>{
+            edKey.Decrypt("RSA-OAEP",keyPair.privateKey,cyphertext).then((result)=>{
+                let dec = new TextDecoder();
+                resultenc_dec.textContent=dec.decode(result);
+            })
+        })
+    });
+
+    //sign and verify
+    let svKey=new GenerateSignVerifyKey("ECDSA");
+    svKey.Generate().then((result)=>{
+        let signature;
+        buttonsign.addEventListener("click",()=>{
+            svKey.Sign("ECDSA",input.value,result.privateKey).then((result)=>{
+                const buffer = new Uint8Array(result,0,5);
+                signature=result;
+                zoneverify.textContent=`${buffer}...[${result.byteLength} bytes total]`;
+                zoneverify.style.color="green";
+            })
+        });
+        buttonverify.addEventListener("click",()=>{
+            svKey.Verify("ECDSA",result.publicKey,signature,input.value).then((result)=>{
+                if(result){
+                    zoneverify.style.color="green";
+                }else{
+                    zoneverify.style.color="red";
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>
