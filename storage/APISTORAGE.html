@@ -6,36 +6,138 @@
 </head>
 <body>
 <input type="text">
-<span></span>
+<span></span><span>  <-- use the localstorage </span>
 <div>Once you've finished to write, close and reopen the navigator. The input should be persistant</div>
 <div>IndexedDB</div>
+<button>Ajouter à la base</button><span id="base" style="display: inline-block;margin-left: 15px;"></span>
+<ul id="bsq"></ul>
 
 <script>
     let input = document.querySelector("input");
     let span = document.querySelector("span");
-    let divDB=document.querySelector('div');
+    let btnBase=document.querySelector('button');
+    let divBase=document.querySelector('#base');
+    let ul=document.querySelector("#bsq");
+    let db;
+    window.onload=()=>{
+        const OpenRequest=window.indexedDB.open('BaseFirst',5);
+        OpenRequest.onerror=(e)=>{
+            divBase.textContent='Error accessing database !!';
+            setTimeout(()=>{
+                divBase.textContent=''
+            }, 1200)
+        };
+        OpenRequest.onsuccess=(e)=>{
+            divBase.textContent='Database initialised';
+            db=e.target.result;
+            setTimeout(()=>{
+                divBase.textContent="Object loading...";
+            }, 200);
+            setTimeout(()=>{
+                divBase.textContent="";
+            }, 400);
+            DisplayData();
+        };
+        OpenRequest.onupgradeneeded=(e)=>{
+            let db=e.target.result;
+            db.onerror=(e)=>{
+                divBase.textContent='Error loading database !!';
+                setTimeout(()=>{
+                    divBase.textContent=''
+                }, 1200)
+            };
+            db.deleteObjectStore('data');
+            let objectStore=db.createObjectStore('data',{keyPath:'key'});
+            divBase.textContent='Object store created';
+            setTimeout(function(){
+                divBase.textContent="";
+            }, 800)
+        };
+        function deleteItem(e){
+            let button =e.currentTarget;
+            let item=button.parentElement;
+            let transaction = db.transaction(['data'],'readwrite');
+            let requestDelete = transaction.objectStore('data').delete(button.id);
+            requestDelete.onsuccess=()=>{
+                divBase.textContent="removed successful !";
+                setTimeout(()=>{
+                    divBase.textContent="";
+                },800)
+            };
+            transaction.oncomplete=(e)=>{
+                item.parentElement.removeChild(item);
+            }
+        }
+        function adddata(e){
+            e.preventDefault();
+            let list = Array.from(ul.children);
+            let controle=true;
+            for(let child of list){
+                if(child.innerHTML.includes(input.value)){
+                    controle=false;
+                    divBase.textContent='You can\'t add a input which is already in the ObjectStore';
+                    setTimeout(()=>{
+                        divBase.textContent="";
+                    },1200);
+                    break;
+                }
+            }
+            if(controle){
+                let transaction=db.transaction(['data'],'readwrite');
+                transaction.oncomplete=()=> {
+                    DisplayData();
+                };
+                transaction.onerror=(e)=>{
+                    divBase.textContent='Transaction not opened due to error '+transaction.error;
+                    setTimeout(()=>{
+                        divBase.textContent="";
+                    })
+                };
+                let objectStore=transaction.objectStore('data');
+                let objectStoreRequest=objectStore.add({value:input.value,key:input.value});
+                objectStoreRequest.onsuccess=(e)=>{
+                    divBase.textContent='Request successful';
+                    setTimeout(()=>{
+                        divBase.textContent="";
+                    },800);
+                }
+            }
+        }
+        function DisplayData(){
+            ul.innerHTML="";
+            let objectStore=db.transaction('data').objectStore('data');
+            objectStore.openCursor().onsuccess=(e)=>{
+                let cursor = e.target.result;
+                if(cursor){
+                    const item=document.createElement('li');
+                    const deleteButton=document.createElement('button');
+                    deleteButton.id=cursor.value.key;
+                    deleteButton.innerHTML='X';
+                    item.innerHTML=cursor.value.key;
+                    item.appendChild(deleteButton);
+                    ul.appendChild(item);
+                    deleteButton.onclick=(e)=>{
+                        deleteItem(e)
+                    };
+                    cursor.continue();
+                }
+            };
+            objectStore.openCursor().onerror=(e)=>{
+                divBase.textContent='Error accessing cursor !!';
+                setTimeout(()=>{
+                    divBase.textContent=''
+                }, 1200)
+            };
+            btnBase.addEventListener('click',adddata,false);
+        }
+    };
     input.addEventListener('input',()=>{
         span.textContent=input.value;
         window.localStorage.setItem('data',input.value);
 
     });
     span.textContent = window.localStorage.getItem('data');
-    let db;
-    let req=window.indexedDB.open('MyTestDatabase');
-    req.onerror=(e)=>{
-        divDB.textContent='Accès refusé à indexedDB'
-    };
-    req.onsuccess=(e)=>{
-        db=e.target.result;
-        db.onerror=(e)=>{
-            divDB.textContent+='Database error : '+e.target.errorCode;
-        }
-    };
-    req.onupgradeneeded=(e)=>{
-        var db=e.target.result;
-        var object=db.createObjectStore('name',{keyPath:'myKey'});
-    }
-</script>
 
+</script>
 </body>
 </html>
